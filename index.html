@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { 
+        font-family: 'Microsoft JhengHei', sans-serif; 
+        background-color: #F0F4F8; 
+        text-align: center; 
+        padding: 15px; 
+        color: #333; 
+      }
+      .container { 
+        background: white; 
+        border-radius: 25px; 
+        padding: 25px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        max-width: 420px; 
+        margin: auto; 
+        border: 2px solid #E0E0E0; 
+      }
+      h1 { 
+        color: #FF7043; 
+        font-size: 28px; 
+        margin-bottom: 15px; 
+        letter-spacing: 2px;
+      }
+      
+      /* 實驗筆記卡片排版 */
+      .guide-card { 
+        background: #FFF9C4; 
+        border-radius: 15px; 
+        padding: 15px; 
+        text-align: left; 
+        margin-bottom: 25px; 
+        border-left: 5px solid #FBC02D; 
+      }
+      .guide-card h3 { 
+        margin: 0 0 8px 0; 
+        color: #F57F17; 
+        font-size: 16px; 
+      }
+      .guide-card p { 
+        margin: 6px 0; 
+        font-size: 14px; 
+        line-height: 1.5; 
+        font-weight: bold;
+      }
+
+      .select-box { 
+        margin-bottom: 20px; 
+        text-align: left; 
+      }
+      .select-box label { 
+        font-weight: bold; 
+        color: #546E7A; 
+        display: block; 
+        margin-bottom: 10px; 
+        font-size: 15px;
+      }
+      select { 
+        width: 100%; 
+        padding: 12px; 
+        border-radius: 15px; 
+        border: 2px solid #CFD8DC; 
+        font-size: 16px; 
+        background: #FAFAFA;
+        cursor: pointer;
+        outline: none;
+      }
+      select:focus {
+        border-color: #FF7043;
+      }
+
+      .btn-mix { 
+        background: #FF7043; 
+        color: white; 
+        border: none; 
+        width: 100%; 
+        padding: 16px; 
+        font-size: 20px; 
+        border-radius: 20px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: 0.3s; 
+        box-shadow: 0 4px 0 #D84315;
+      }
+      .btn-mix:hover { 
+        background: #F4511E; 
+        transform: translateY(2px); 
+        box-shadow: 0 2px 0 #D84315;
+      }
+      .btn-mix:active {
+        transform: translateY(4px);
+        box-shadow: none;
+      }
+
+      /* 結果顯示區域 */
+      #result-display { 
+        margin-top: 25px; 
+        padding: 20px; 
+        border-radius: 20px; 
+        display: none; 
+        animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      }
+      @keyframes popIn { 
+        from { transform: scale(0.8); opacity: 0; } 
+        to { transform: scale(1); opacity: 1; } 
+      }
+      .emoji-icon { 
+        font-size: 55px; 
+        margin-bottom: 10px; 
+        display: block; 
+      }
+      #msg {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .btn-reset {
+        margin-top: 15px; 
+        background: white; 
+        border: 1px solid #CCC; 
+        padding: 8px 20px; 
+        border-radius: 50px; 
+        cursor: pointer; 
+        color: #888;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🍹 電力特調</h1>
+      
+      <div class="guide-card">
+        <h3>🧪 實驗小筆記</h3>
+        <p>● 🔋 電池串聯 = 力量變強！</p>
+        <p>● 🔋 電池並聯 = 體力變久！</p>
+        <p>● 💡 燈泡串聯 = 大家分電變暗！</p>
+        <p>● 💡 燈泡並聯 = 各自亮亮！</p>
+      </div>
+
+      <div class="select-box">
+        <label>🔋 電池要怎麼接？</label>
+        <select id="batterySelect">
+          <option value="串聯">串聯「一條龍」</option>
+          <option value="並聯">並聯「排排站」</option>
+        </select>
+      </div>
+
+      <div class="select-box">
+        <label>💡 燈泡要怎麼接？</label>
+        <select id="bulbSelect">
+          <option value="串聯">串聯「分著用」</option>
+          <option value="並聯">並聯「自己用」</option>
+        </select>
+      </div>
+
+      <button class="btn-mix" onclick="startMix()">開始特調！搖一搖！</button>
+
+      <div id="result-display">
+        <span class="emoji-icon" id="emoji"></span>
+        <p id="msg"></p>
+        <button class="btn-reset" onclick="resetGame()">重新嘗試</button>
+      </div>
+    </div>
+
+    <script>
+      function startMix() {
+        const bat = document.getElementById('batterySelect').value;
+        const bul = document.getElementById('bulbSelect').value;
+        
+        // 呼叫後端 Code.gs 的函式
+        google.script.run.withSuccessHandler(showResult).mixEnergy(bat, bul);
+      }
+
+      function showResult(res) {
+        const box = document.getElementById('result-display');
+        document.getElementById('emoji').innerText = res.icon;
+        document.getElementById('msg').innerText = res.text;
+        
+        box.style.display = 'block';
+        // 如果結果包含爆炸圖示，背景變淡紅色，否則為淡綠色
+        box.style.backgroundColor = res.icon.includes('💥') ? '#FFEBEE' : '#E8F5E9';
+        
+        // 自動捲動到結果區域
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+
+      function resetGame() {
+        document.getElementById('result-display').style.display = 'none';
+      }
+    </script>
+  </body>
+</html>
