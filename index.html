@@ -3,6 +3,7 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
+  <title>微光調飲室：傳奇店長版</title>
   <style>
     :root { --primary: #0f172a; --secondary: #1e293b; --accent: #fbbf24; --text: #f43f5e; --success: #22c55e; }
     
@@ -12,7 +13,6 @@
     .screen.active { display: flex; animation: fadeIn 0.6s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* 介紹頁面：霓虹美化 */
     .neon-title { font-size: 3em; color: var(--accent); margin-bottom: 0.2em; text-shadow: 0 0 10px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4); animation: flicker 3s infinite; }
     @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.7; } }
 
@@ -22,12 +22,10 @@
     .customer-name { color: var(--accent); font-weight: bold; font-size: 1.4em; margin-bottom: 8px; }
     .customer-demand { font-size: 1.25em; line-height: 1.5; color: #f1f5f9; }
 
-    /* 提示區 */
     .hint-container { width: 90%; max-width: 500px; margin-bottom: 20px; text-align: left; }
     #hint-btn { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--accent); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; }
     .hint-box { background: rgba(251, 191, 36, 0.05); border: 1px dashed var(--accent); color: var(--accent); padding: 12px 20px; border-radius: 10px; margin-top: 10px; display: none; font-size: 1em; }
 
-    /* 燈泡視覺：碎裂或發光 */
     .bulb-box { margin: 25px 0; display: flex; gap: 40px; }
     .bulb { font-size: 4.8em; color: #334155; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0.2; }
     .bulb.on { color: var(--accent); opacity: 1; text-shadow: 0 0 30px var(--accent), 0 0 60px var(--accent); transform: scale(1.15); }
@@ -39,11 +37,9 @@
     .choice-btn { background: #475569; margin: 0 12px; }
     .choice-btn.selected { background: var(--text); outline: 4px solid white; box-shadow: 0 0 15px var(--text); }
 
-    /* AI 反饋區 */
     #ai-feedback { background: rgba(15, 23, 42, 0.98); padding: 25px; border-radius: 15px; width: 90%; max-width: 550px; display: none; border: 1px solid var(--success); text-align: left; margin-top: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
     .ai-action { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
 
-    /* 結算 */
     .result-list { overflow-y: auto; max-height: 55vh; width: 100%; max-width: 600px; padding: 10px; }
     .result-item { background: #1e293b; padding: 18px; margin-bottom: 12px; border-radius: 12px; border-left: 6px solid var(--accent); text-align: left; }
   </style>
@@ -101,7 +97,6 @@
   </div>
 
   <script>
-    // 100 題庫隨機生成逻辑
     const baseQuests = [
       { d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", h: "串聯會平分電壓，亮度變暗，最適合柔和燈光。", a: "series" },
       { d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", h: "並聯讓每個燈泡都獲得完整電壓，亮度最高。", a: "parallel" },
@@ -115,7 +110,7 @@
 
     const customerTitles = ["不喜歡黑暗的探險家", "追求極致光芒的魔法師", "講求穩定的老工程師", "優雅的書卷氣少女", "喜歡香蕉巧克力的黑桃A", "夜貓子科學家", "愛惜器材的修理工", "電力公司的實習生", "古怪的調飲收藏家", "愛冒險的小精靈"];
 
-    const fullQuiz = [];
+    let fullQuiz = [];
     for(let i=0; i<100; i++) {
       let b = baseQuests[i % baseQuests.length];
       fullQuiz.push({
@@ -128,16 +123,7 @@
     let gameQuizzes = [], cIdx = 0, total = 0, logs = [], current = null, hVisible = false;
 
     function startGame() {
-      let playedIds = JSON.parse(localStorage.getItem('playedIds') || '[]');
-      let available = fullQuiz.filter(q => !playedIds.includes(q.id));
-      
-      if(available.length < 6) { playedIds = []; available = [...fullQuiz]; }
-
-      gameQuizzes = available.sort(() => Math.random() - 0.5).slice(0, 6);
-      playedIds.push(...gameQuizzes.map(q => q.id));
-      if(playedIds.length > 60) playedIds.splice(0, 30);
-      localStorage.setItem('playedIds', JSON.stringify(playedIds));
-
+      gameQuizzes = fullQuiz.sort(() => Math.random() - 0.5).slice(0, 6);
       show('game-page');
       load();
     }
@@ -177,6 +163,7 @@
       document.getElementById(t==='series'?'s-btn':'p-btn').classList.add('selected');
     }
 
+    // --- 核心修正：改為純前端運行的 handleMix ---
     function handleMix() {
       if(!current) return alert("學徒，你要選一種接法才能出杯啊！");
       const q = gameQuizzes[cIdx];
@@ -190,13 +177,31 @@
       document.getElementById('mix-btn').style.display = 'none';
       document.getElementById('controls').style.pointerEvents = 'none';
       document.getElementById('ai-feedback').style.display = 'block';
-      document.getElementById('ai-txt').innerText = "店長正在細細品味你的配方...";
+      
+      // 生成本地點評
+      const feedback = generateManagerFeedback(q.n, isOk, current);
+      document.getElementById('ai-txt').innerText = feedback;
       
       logs.push({ q: q.d, p: current, ok: isOk, h: q.h, name: q.n });
+    }
 
-      google.script.run.withSuccessHandler(msg => {
-        document.getElementById('ai-txt').innerText = msg;
-      }).getAIDialog(q.n, q.d, current, isOk);
+    function generateManagerFeedback(name, isCorrect, choice) {
+      const mode = choice === 'series' ? '串聯' : '並聯';
+      const successPool = [
+        `做得好！這杯調飲的電流流動得像詩一樣。${name}對這亮度非常滿意！`,
+        `出色的直覺！利用${mode}來精準控制能量，你已經掌握了店長三成的功力。`,
+        `完美！你成功捕捉到了光影的節奏。沒錯，這就是電路調飲的藝術。`,
+        `學徒，這杯「${mode}」配方調得很有靈魂，客人喝到眼睛都發亮了！`
+      ];
+      const failPool = [
+        `哎呀...這杯喝起來像短路的電池，苦澀得讓人想叫救護車。${name}可受不了。`,
+        `學徒，這杯的味道有點「斷路」了。記住，${mode}會改變電壓的分配，再去練習看看！`,
+        `差一點點！這就像是把高級茶葉泡進冷水裡，電路的接法錯了，光芒就散發不出來。`,
+        `店長建議：如果你想要更穩定的亮度，下次或許該試試看另一種接法？`
+      ];
+      
+      const pool = isCorrect ? successPool : failPool;
+      return pool[Math.floor(Math.random() * pool.length)];
     }
 
     function goNext() {
@@ -211,7 +216,7 @@
           <b style="color:var(--accent)">【${l.name}】</b><br>
           <b>需求：</b>${l.q}<br>
           <b>評價：</b>${l.ok ? '完美調配 ✅' : '配方失敗 ❌'}<br>
-          <small>店長的話：${l.h}</small>
+          <small>店長的私房筆記：${l.h}</small>
         </div>
       `).join('');
     }
