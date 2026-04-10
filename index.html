@@ -6,32 +6,54 @@
   <title>微光調飲室：傳奇店長版</title>
   <style>
     :root { --primary: #0f172a; --secondary: #1e293b; --accent: #fbbf24; --text: #f43f5e; --success: #22c55e; }
+    
     body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: var(--primary); color: white; font-family: "Microsoft JhengHei", sans-serif; }
+    
     .screen { display: none; height: 100vh; width: 100vw; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
     .screen.active { display: flex; animation: fadeIn 0.6s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .neon-title { font-size: 3em; color: var(--accent); margin-bottom: 0.2em; text-shadow: 0 0 10px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4); }
+
+    /* 強化霓虹燈效果 */
+    .neon-title { 
+      font-size: 3.5em; 
+      color: var(--accent); 
+      margin-bottom: 0.2em; 
+      text-shadow: 0 0 5px #fff, 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 40px var(--accent);
+      animation: neon-flicker 2s infinite alternate; 
+    }
+    @keyframes neon-flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 0 0 5px #fff, 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 40px var(--accent);
+      }
+      20%, 22%, 24%, 55% { text-shadow: none; opacity: 0.8; }
+    }
+
     .game-header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; background: var(--secondary); padding: 12px 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
     .customer-card { background: #1e293b; border-radius: 20px; padding: 25px; width: 90%; max-width: 550px; border: 2px solid #334155; margin-bottom: 15px; text-align: left; border-left: 8px solid var(--accent); }
     .customer-name { color: var(--accent); font-weight: bold; font-size: 1.4em; margin-bottom: 8px; }
     .customer-demand { font-size: 1.25em; line-height: 1.5; color: #f1f5f9; }
+
     #hint-btn { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--accent); padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-    .hint-box { background: rgba(251, 191, 36, 0.05); border: 1px dashed var(--accent); color: var(--accent); padding: 12px 20px; border-radius: 10px; margin-top: 10px; display: none; }
+    .hint-box { background: rgba(15, 23, 42, 0.8); border: 1px dashed var(--accent); color: #cbd5e1; padding: 15px 20px; border-radius: 10px; margin-top: 10px; display: none; text-align: left; line-height: 1.6; font-size: 0.95em; }
+
     .bulb-box { margin: 25px 0; display: flex; gap: 40px; }
     .bulb { font-size: 4.8em; color: #334155; transition: 0.6s; opacity: 0.2; }
     .bulb.on { color: var(--accent); opacity: 1; text-shadow: 0 0 30px var(--accent); transform: scale(1.1); }
     .bulb.broken { color: #1e293b; opacity: 0.1; transform: scale(0.8) rotate(-15deg); }
+
     button { background: var(--text); color: white; border: none; padding: 14px 38px; font-size: 1.2em; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.2s; }
     .choice-btn { background: #475569; margin: 0 12px; }
     .choice-btn.selected { background: var(--text); outline: 4px solid white; }
-    #ai-feedback { background: rgba(15, 23, 42, 0.98); padding: 25px; border-radius: 15px; width: 90%; max-width: 550px; display: none; border: 1px solid var(--success); text-align: left; margin-top: 15px; }
+    
+    #ai-feedback { background: rgba(15, 23, 42, 0.98); padding: 25px; border-radius: 15px; width: 90%; max-width: 550px; display: none; border: 1px solid var(--success); text-align: left; margin-top: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
   </style>
 </head>
 <body>
 
   <div id="intro-page" class="screen active">
+    <div style="font-size: 4em; margin-bottom: 10px;">🧪</div>
     <h1 class="neon-title">微光調飲室</h1>
-    <p style="color: #94a3b8; margin-bottom: 35px;">專為四年級設計：100 關電路科學挑戰</p>
+    <p style="color: #94a3b8; margin-bottom: 35px; font-size: 1.2em;">四年級電路傳奇：挑戰 100 種光影配方</p>
     <button onclick="startGame()">開始營業</button>
   </div>
 
@@ -44,7 +66,7 @@
       <div id="ui-name" class="customer-name">...</div>
       <div id="ui-demand" class="customer-demand">...</div>
     </div>
-    <div style="width: 90%; max-width: 500px; margin-bottom: 20px; text-align: left;">
+    <div style="width: 90%; max-width: 500px; margin-bottom: 20px;">
       <button id="hint-btn" onclick="toggleHint()">💡 翻開店長的私房筆記</button>
       <div id="ui-hint" class="hint-box">...</div>
     </div>
@@ -57,36 +79,55 @@
     </div>
     <button id="mix-btn" onclick="handleMix()">確認出杯</button>
     <div id="ai-feedback">
-      <p id="ai-txt" style="line-height: 1.6;">...</p>
-      <button onclick="goNext()" style="background:var(--success); width:100%; margin-top:15px;">下一位顧客</button>
+      <p id="ai-txt" style="font-size: 1.1em;">...</p>
+      <button id="next-action-btn" onclick="goNext()" style="background:var(--success); width:100%; margin-top:15px;">下一位顧客</button>
     </div>
   </div>
 
   <div id="result-page" class="screen">
-    <h1 class="neon-title">營業結算</h1>
-    <h2 id="final-cash" style="color: var(--accent);"></h2>
-    <div id="res-list" style="overflow-y:auto; max-height:50vh; width:100%; max-width:600px;"></div>
-    <button onclick="location.reload()" style="margin-top:20px;">重新挑戰</button>
+    <h1 class="neon-title" style="font-size: 2.5em;">今日營業結算</h1>
+    <h2 id="final-cash" style="color: var(--accent); font-size: 2em;"></h2>
+    <div id="res-list" style="overflow-y:auto; max-height:45vh; width:100%; max-width:600px; margin: 20px 0;"></div>
+    <button onclick="location.reload()">重新挑戰 100 題庫</button>
   </div>
 
   <script>
+    // 擴充多元筆記內容
     const baseQuests = [
-      { d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", h: "串聯會平分電壓，亮度變暗，最適合柔和燈光。", a: "series" },
-      { d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", h: "並聯讓每個燈泡都獲得完整電壓，亮度最高。", a: "parallel" },
-      { d: "如果一顆燈泡不幸壞了，另一顆也要能繼續亮著。", h: "並聯電路各自獨立，互不干擾。", a: "parallel" },
-      { d: "電力有限，請讓兩顆燈泡一起平分負擔。", h: "串聯會將能量分配給所有負載。", a: "series" }
+      { 
+        d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", 
+        h: "<b>【科學重點】</b>：串聯會平分電池的能量，燈泡亮度會變暗。<br><b>【店長悄悄話】</b>：這就像兩個人分一碗飯，大家都會吃得比較少喔！", 
+        a: "series" 
+      },
+      { 
+        d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", 
+        h: "<b>【科學重點】</b>：並聯電路中，每個燈泡都能得到完整的電壓，所以超級亮！<br><b>【生活應用】</b>：就像家裡的電燈，每盞都是一樣亮的喔。", 
+        a: "parallel" 
+      },
+      { 
+        d: "如果一顆燈泡不幸壞了，另一顆也要能繼續亮著。", 
+        h: "<b>【科學重點】</b>：並聯是「各走各的路」，一邊斷了，另一邊電力還是通的。<br><b>【店長筆記】</b>：串聯只要一個壞掉，全家都會一起熄滅，這點要小心！", 
+        a: "parallel" 
+      },
+      { 
+        d: "這顆燈泡很珍貴，不想讓它承受太大電壓，分一半給別人吧。", 
+        h: "<b>【科學重點】</b>：串聯電路中，電流只有一條路可以走，負擔會平攤。<br><b>【店長悄悄話】</b>：想要延長燈泡壽命，溫柔的串聯是不錯的選擇。", 
+        a: "series" 
+      }
     ];
-    const customerTitles = ["不喜歡黑暗的探險家", "追求極致光芒的魔法師", "老工程師", "優雅的書卷氣少女"];
+
+    const customerTitles = ["喜歡香蕉巧克力的黑桃A", "追求極致光芒的魔法師", "講求穩定的老工程師", "優雅的書卷氣少女", "不喜歡黑暗的探險家"];
     let fullQuiz = [];
     for(let i=0; i<100; i++) {
       let b = baseQuests[i % baseQuests.length];
-      fullQuiz.push({ id: i, n: customerTitles[i % 4], d: b.d, h: b.h, a: b.a, v: 150 });
+      fullQuiz.push({ id: i, n: customerTitles[Math.floor(Math.random()*customerTitles.length)], d: b.d, h: b.h, a: b.a, v: 150 });
     }
 
     let gameQuizzes = [], cIdx = 0, total = 0, logs = [], current = null, hVisible = false;
 
     function startGame() {
       gameQuizzes = fullQuiz.sort(() => Math.random() - 0.5).slice(0, 6);
+      cIdx = 0; total = 0; logs = [];
       show('game-page');
       load();
     }
@@ -100,7 +141,7 @@
       document.getElementById('ui-cash').innerText = total;
       document.getElementById('ui-name').innerText = q.n;
       document.getElementById('ui-demand').innerText = q.d;
-      document.getElementById('ui-hint').innerText = q.h;
+      document.getElementById('ui-hint').innerHTML = q.h;
       current = null; hVisible = false;
       document.getElementById('ui-hint').style.display = 'none';
       document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
@@ -123,28 +164,49 @@
       const q = gameQuizzes[cIdx];
       const isOk = (current === q.a);
       if(isOk) total += q.v;
+      
       document.querySelectorAll('.bulb').forEach(b => {
         if(isOk) b.classList.add('on'); else b.classList.add('broken');
       });
+
       document.getElementById('mix-btn').style.display = 'none';
       document.getElementById('controls').style.pointerEvents = 'none';
       document.getElementById('ai-feedback').style.display = 'block';
       document.getElementById('ai-txt').innerText = generateFeedback(q.n, isOk, current);
+      
+      // --- 核心更新：判斷是否為最後一位客人 ---
+      const nextBtn = document.getElementById('next-action-btn');
+      if (cIdx === 5) {
+        nextBtn.innerText = "查看今日營收";
+        nextBtn.style.background = "#f59e0b"; // 換個顏色提醒結束
+      } else {
+        nextBtn.innerText = "下一位顧客";
+        nextBtn.style.background = "var(--success)";
+      }
+      
       logs.push({ q: q.d, p: current, ok: isOk, h: q.h, name: q.n });
     }
+
     function generateFeedback(name, isCorrect, choice) {
-      const msgs = isCorrect ? ["做得好！電流動得像詩一樣。", "完美！你掌握了電路的藝術。"] : ["哎呀，這杯短路了...", "學徒，再去看看你的筆記！"];
-      return `【店長評價】：${msgs[Math.floor(Math.random()*msgs.length)]}`;
+      const mode = choice === 'series' ? '串聯' : '並聯';
+      const success = [`完美！這杯「${mode}」調得非常有層次。`, `優秀！${name}說他感受到了正確的能量。`];
+      const fail = [`哎呀...這杯電路斷了。記住，${mode}的特性不是這樣的喔。`, `可惜！這杯的味道有點「短路」了。`];
+      return isCorrect ? success[Math.floor(Math.random()*success.length)] : fail[Math.floor(Math.random()*fail.length)];
     }
+
     function goNext() {
-      cIdx++; if(cIdx < 6) load(); else finish();
+      cIdx++; 
+      if(cIdx < 6) load(); 
+      else finish();
     }
+
     function finish() {
       show('result-page');
       document.getElementById('final-cash').innerText = `總收入：$ ${total}`;
       document.getElementById('res-list').innerHTML = logs.map(l => `
-        <div style="background:#1e293b; padding:15px; margin-bottom:10px; border-radius:10px; text-align:left;">
-          <b style="color:var(--accent)">${l.name}</b>: ${l.ok ? '✅' : '❌'}<br><small>${l.h}</small>
+        <div style="background:#1e293b; padding:18px; margin-bottom:12px; border-radius:12px; border-left:6px solid ${l.ok ? '#22c55e' : '#f43f5e'}; text-align:left;">
+          <b style="color:var(--accent)">【${l.name}】</b> ${l.ok ? '✅' : '❌'}<br>
+          <div style="font-size:0.9em; margin-top:5px; color:#94a3b8;">${l.h}</div>
         </div>
       `).join('');
     }
