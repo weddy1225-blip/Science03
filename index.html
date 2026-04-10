@@ -1,209 +1,220 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍹 電力特調 - 小小實驗室</title>
-    <style>
-      body { 
-        font-family: 'Microsoft JhengHei', sans-serif; 
-        background-color: #F0F4F8; 
-        text-align: center; 
-        padding: 15px; 
-        color: #333; 
-        margin: 0;
-      }
-      .container { 
-        background: white; 
-        border-radius: 25px; 
-        padding: 25px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-        max-width: 420px; 
-        margin: 20px auto; 
-        border: 2px solid #E0E0E0; 
-      }
-      h1 { 
-        color: #FF7043; 
-        font-size: 28px; 
-        margin-bottom: 15px; 
-        letter-spacing: 2px;
-      }
-      .guide-card { 
-        background: #FFF9C4; 
-        border-radius: 15px; 
-        padding: 15px; 
-        text-align: left; 
-        margin-bottom: 25px; 
-        border-left: 5px solid #FBC02D; 
-      }
-      .guide-card h3 { 
-        margin: 0 0 8px 0; 
-        color: #F57F17; 
-        font-size: 16px; 
-      }
-      .guide-card p { 
-        margin: 6px 0; 
-        font-size: 14px; 
-        line-height: 1.5; 
-        font-weight: bold;
-      }
-      .select-box { 
-        margin-bottom: 20px; 
-        text-align: left; 
-      }
-      .select-box label { 
-        font-weight: bold; 
-        color: #546E7A; 
-        display: block; 
-        margin-bottom: 10px; 
-        font-size: 15px;
-      }
-      select { 
-        width: 100%; 
-        padding: 12px; 
-        border-radius: 15px; 
-        border: 2px solid #CFD8DC; 
-        font-size: 16px; 
-        background: #FAFAFA;
-        cursor: pointer;
-        outline: none;
-      }
-      .btn-mix { 
-        background: #FF7043; 
-        color: white; 
-        border: none; 
-        width: 100%; 
-        padding: 16px; 
-        font-size: 20px; 
-        border-radius: 20px; 
-        cursor: pointer; 
-        font-weight: bold; 
-        transition: 0.3s; 
-        box-shadow: 0 4px 0 #D84315;
-      }
-      .btn-mix:hover { 
-        background: #F4511E; 
-        transform: translateY(2px); 
-        box-shadow: 0 2px 0 #D84315;
-      }
-      #result-display { 
-        margin-top: 25px; 
-        padding: 20px; 
-        border-radius: 20px; 
-        display: none; 
-        animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-      }
-      @keyframes popIn { 
-        from { transform: scale(0.8); opacity: 0; } 
-        to { transform: scale(1); opacity: 1; } 
-      }
-      .emoji-icon { 
-        font-size: 55px; 
-        margin-bottom: 10px; 
-        display: block; 
-      }
-      #msg {
-        font-size: 16px;
-        line-height: 1.6;
-        margin: 10px 0;
-      }
-      .btn-reset {
-        margin-top: 15px; 
-        background: white; 
-        border: 1px solid #CCC; 
-        padding: 8px 20px; 
-        border-radius: 50px; 
-        cursor: pointer; 
-        color: #888;
-        font-size: 13px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>🍹 電力特調</h1>
-      
-      <div class="guide-card">
-        <h3>🧪 實驗小筆記</h3>
-        <p>● 🔋 電池串聯 = 力量變強！</p>
-        <p>● 🔋 電池並聯 = 體力變久！</p>
-        <p>● 💡 燈泡串聯 = 大家分電變暗！</p>
-        <p>● 💡 燈泡並聯 = 各自亮亮！</p>
-      </div>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <style>
+    :root { --primary: #0f172a; --secondary: #1e293b; --accent: #fbbf24; --text: #f43f5e; --success: #22c55e; }
+    
+    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: var(--primary); color: white; font-family: "Microsoft JhengHei", sans-serif; }
+    
+    .screen { display: none; height: 100vh; width: 100vw; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .screen.active { display: flex; animation: fadeIn 0.6s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-      <div class="select-box">
-        <label>🔋 電池要怎麼接？</label>
-        <select id="batterySelect">
-          <option value="串聯">串聯「一條龍」</option>
-          <option value="並聯">並聯「排排站」</option>
-        </select>
-      </div>
+    /* 介紹頁面：霓虹美化 */
+    .neon-title { font-size: 3em; color: var(--accent); margin-bottom: 0.2em; text-shadow: 0 0 10px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4); animation: flicker 3s infinite; }
+    @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.7; } }
 
-      <div class="select-box">
-        <label>💡 燈泡要怎麼接？</label>
-        <select id="bulbSelect">
-          <option value="串聯">串聯「分著用」</option>
-          <option value="並聯">並聯「自己用」</option>
-        </select>
-      </div>
+    .game-header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; background: var(--secondary); padding: 12px 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
+    
+    .customer-card { background: #1e293b; border-radius: 20px; padding: 25px; width: 90%; max-width: 550px; border: 2px solid #334155; margin-bottom: 15px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 8px solid var(--accent); }
+    .customer-name { color: var(--accent); font-weight: bold; font-size: 1.4em; margin-bottom: 8px; }
+    .customer-demand { font-size: 1.25em; line-height: 1.5; color: #f1f5f9; }
 
-      <button class="btn-mix" onclick="startMix()">開始特調！搖一搖！</button>
+    /* 提示區 */
+    .hint-container { width: 90%; max-width: 500px; margin-bottom: 20px; text-align: left; }
+    #hint-btn { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--accent); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; }
+    .hint-box { background: rgba(251, 191, 36, 0.05); border: 1px dashed var(--accent); color: var(--accent); padding: 12px 20px; border-radius: 10px; margin-top: 10px; display: none; font-size: 1em; }
 
-      <div id="result-display">
-        <span class="emoji-icon" id="emoji"></span>
-        <p id="msg"></p>
-        <button class="btn-reset" onclick="resetGame()">重新嘗試</button>
-      </div>
+    /* 燈泡視覺：碎裂或發光 */
+    .bulb-box { margin: 25px 0; display: flex; gap: 40px; }
+    .bulb { font-size: 4.8em; color: #334155; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0.2; }
+    .bulb.on { color: var(--accent); opacity: 1; text-shadow: 0 0 30px var(--accent), 0 0 60px var(--accent); transform: scale(1.15); }
+    .bulb.broken { color: #1e293b; opacity: 0.1; transform: scale(0.8) rotate(-15deg); filter: grayscale(1) blur(1px); }
+
+    .btn-row { margin-bottom: 25px; }
+    button { background: var(--text); color: white; border: none; padding: 14px 38px; font-size: 1.2em; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4); }
+    .choice-btn { background: #475569; margin: 0 12px; }
+    .choice-btn.selected { background: var(--text); outline: 4px solid white; box-shadow: 0 0 15px var(--text); }
+
+    /* AI 反饋區 */
+    #ai-feedback { background: rgba(15, 23, 42, 0.98); padding: 25px; border-radius: 15px; width: 90%; max-width: 550px; display: none; border: 1px solid var(--success); text-align: left; margin-top: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
+    .ai-action { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
+
+    /* 結算 */
+    .result-list { overflow-y: auto; max-height: 55vh; width: 100%; max-width: 600px; padding: 10px; }
+    .result-item { background: #1e293b; padding: 18px; margin-bottom: 12px; border-radius: 12px; border-left: 6px solid var(--accent); text-align: left; }
+  </style>
+</head>
+<body>
+
+  <div id="intro-page" class="screen active">
+    <div class="bulb on" style="margin-bottom: -15px; opacity: 0.7; font-size: 3em;">💡</div>
+    <h1 class="neon-title">微光調飲室</h1>
+    <p style="font-size: 1.3em; color: #94a3b8; margin-bottom: 35px; max-width: 500px;">店長準備了 100 種電路配方，你能完美過關嗎？</p>
+    <button onclick="startGame()">正式營業</button>
+  </div>
+
+  <div id="game-page" class="screen">
+    <div class="game-header">
+      <span>單號 <b id="ui-idx">1</b> / 6</span>
+      <span>金幣 $ <b id="ui-cash">0</b></span>
     </div>
 
-    <script>
-      // 將原本 Code.gs 的邏輯搬移到這裡
-      function mixEnergyLogic(battery, bulb) {
-        let result = "";
-        let emoji = "";
-        
-        if (battery === "串聯" && bulb === "並聯") {
-          result = "「超級閃亮特調！」愛迪生喝了一口，眼睛亮得像探照燈！他大喊：「喔喔喔！這電力強到可以看到外星人啦！」";
-          emoji = "🤩⚡";
-        } else if (battery === "並聯" && bulb === "串聯") {
-          result = "「微弱螢火蟲特調...」愛迪生喝完打了個哈欠，額頭只有一點點紅光。他說：「助手，這電力太弱了，我連牙刷都動不了。」";
-          emoji = "💤🪫";
-        } else if (battery === "串聯" && bulb === "串聯") {
-          result = "「普通亮度特調」愛迪生點了點頭。他說：「不錯喔，這是一杯四平八穩的果汁，雖然不刺激但很安全！」";
-          emoji = "💡😊";
-        } else if (battery === "並聯" && bulb === "並聯") {
-          result = "「持久續航特調」愛迪生喝完後非常有精神，雖然燈泡沒特別亮，但他可以連續跳舞三天三夜不休息！";
-          emoji = "🔋💃";
-        } else {
-          result = "「喔歐！短路啦！」杯子冒煙了！愛迪生的臉黑青一片。他咳嗽說：「咳咳... 雖然失敗了，但再來一次一定行！」";
-          emoji = "💥😵";
-        }
-        return { text: result, icon: emoji };
-      }
+    <div class="customer-card">
+      <div id="ui-name" class="customer-name">...</div>
+      <div id="ui-demand" class="customer-demand">...</div>
+    </div>
 
-      function startMix() {
-        const bat = document.getElementById('batterySelect').value;
-        const bul = document.getElementById('bulbSelect').value;
-        
-        // 直接在前端執行判斷邏輯
-        const res = mixEnergyLogic(bat, bul);
-        showResult(res);
-      }
+    <div class="hint-container">
+      <button id="hint-btn" onclick="toggleHint()">💡 翻開店長的私房筆記</button>
+      <div id="ui-hint" class="hint-box">...</div>
+    </div>
 
-      function showResult(res) {
-        const box = document.getElementById('result-display');
-        document.getElementById('emoji').innerText = res.icon;
-        document.getElementById('msg').innerText = res.text;
-        
-        box.style.display = 'block';
-        box.style.backgroundColor = res.icon.includes('💥') ? '#FFEBEE' : '#E8F5E9';
-        
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }
+    <div class="bulb-box">
+      <span id="b1" class="bulb">💡</span>
+      <span id="b2" class="bulb">💡</span>
+    </div>
 
-      function resetGame() {
-        document.getElementById('result-display').style.display = 'none';
-      }
-    </script>
-  </body>
+    <div id="controls" class="btn-row">
+      <button id="s-btn" class="choice-btn" onclick="setChoice('series')">🔗 串聯</button>
+      <button id="p-btn" class="choice-btn" onclick="setChoice('parallel')">⚡ 並聯</button>
+    </div>
+
+    <button id="mix-btn" onclick="handleMix()">確認出杯</button>
+
+    <div id="ai-feedback">
+      <p id="ai-txt" style="line-height: 1.6; font-size: 1.1em;">...</p>
+      <div class="ai-action">
+        <button id="next-btn" onclick="goNext()" style="background:var(--success)">下一位顧客</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-page" class="screen">
+    <h1 class="neon-title" style="font-size: 2.5em;">✨ 今日營業結算 ✨</h1>
+    <h2 id="final-cash" style="color: var(--accent); margin-bottom: 25px;"></h2>
+    <div class="result-list" id="res-list"></div>
+    <button onclick="location.reload()" style="margin-top: 25px;">重新開始挑戰</button>
+  </div>
+
+  <script>
+    // 100 題庫隨機生成逻辑
+    const baseQuests = [
+      { d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", h: "串聯會平分電壓，亮度變暗，最適合柔和燈光。", a: "series" },
+      { d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", h: "並聯讓每個燈泡都獲得完整電壓，亮度最高。", a: "parallel" },
+      { d: "如果一顆燈泡不幸壞了，另一顆也要能繼續亮著。", h: "並聯電路各自獨立，互不干擾。", a: "parallel" },
+      { d: "我需要溫和不刺眼的平均亮度，淡淡的就好。", h: "串聯後電流較小，光線溫和。", a: "series" },
+      { d: "請用跟家中客廳插座一樣的連接邏輯調配。", h: "家用電器為了能獨立開關，全部都是並聯。", a: "parallel" },
+      { d: "電力有限，請讓兩顆燈泡一起平分負擔。", h: "串聯會將能量分配給所有負載。", a: "series" },
+      { d: "我想在派對上用閃亮亮的燈光吸引大家注意。", h: "並聯提供最大電流，燈泡最閃亮。", a: "parallel" },
+      { d: "這顆燈泡很珍貴，不想讓它承受太大電壓，分一半給別人吧。", h: "串聯可以分配電壓保護燈泡。", a: "series" }
+    ];
+
+    const customerTitles = ["不喜歡黑暗的探險家", "追求極致光芒的魔法師", "講求穩定的老工程師", "優雅的書卷氣少女", "喜歡香蕉巧克力的黑桃A", "夜貓子科學家", "愛惜器材的修理工", "電力公司的實習生", "古怪的調飲收藏家", "愛冒險的小精靈"];
+
+    const fullQuiz = [];
+    for(let i=0; i<100; i++) {
+      let b = baseQuests[i % baseQuests.length];
+      fullQuiz.push({
+        id: i,
+        n: customerTitles[Math.floor(Math.random()*customerTitles.length)],
+        d: b.d, h: b.h, a: b.a, v: 120 + (i % 5) * 20
+      });
+    }
+
+    let gameQuizzes = [], cIdx = 0, total = 0, logs = [], current = null, hVisible = false;
+
+    function startGame() {
+      let playedIds = JSON.parse(localStorage.getItem('playedIds') || '[]');
+      let available = fullQuiz.filter(q => !playedIds.includes(q.id));
+      
+      if(available.length < 6) { playedIds = []; available = [...fullQuiz]; }
+
+      gameQuizzes = available.sort(() => Math.random() - 0.5).slice(0, 6);
+      playedIds.push(...gameQuizzes.map(q => q.id));
+      if(playedIds.length > 60) playedIds.splice(0, 30);
+      localStorage.setItem('playedIds', JSON.stringify(playedIds));
+
+      show('game-page');
+      load();
+    }
+
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function load() {
+      const q = gameQuizzes[cIdx];
+      document.getElementById('ui-idx').innerText = cIdx + 1;
+      document.getElementById('ui-cash').innerText = total;
+      document.getElementById('ui-name').innerText = q.n;
+      document.getElementById('ui-demand').innerText = q.d;
+      document.getElementById('ui-hint').innerText = q.h;
+      
+      current = null; hVisible = false;
+      document.getElementById('ui-hint').style.display = 'none';
+      document.getElementById('hint-btn').innerText = "💡 翻開店長的私房筆記";
+      document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.bulb').forEach(b => b.classList.remove('on', 'broken'));
+      document.getElementById('mix-btn').style.display = 'block';
+      document.getElementById('ai-feedback').style.display = 'none';
+      document.getElementById('controls').style.pointerEvents = 'auto';
+    }
+
+    function toggleHint() {
+      hVisible = !hVisible;
+      document.getElementById('ui-hint').style.display = hVisible ? 'block' : 'none';
+      document.getElementById('hint-btn').innerText = hVisible ? "💡 闔上筆記" : "💡 翻開店長的私房筆記";
+    }
+
+    function setChoice(t) {
+      current = t;
+      document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById(t==='series'?'s-btn':'p-btn').classList.add('selected');
+    }
+
+    function handleMix() {
+      if(!current) return alert("學徒，你要選一種接法才能出杯啊！");
+      const q = gameQuizzes[cIdx];
+      const isOk = (current === q.a);
+      if(isOk) total += q.v;
+      
+      document.querySelectorAll('.bulb').forEach(b => {
+        if(isOk) b.classList.add('on'); else b.classList.add('broken');
+      });
+
+      document.getElementById('mix-btn').style.display = 'none';
+      document.getElementById('controls').style.pointerEvents = 'none';
+      document.getElementById('ai-feedback').style.display = 'block';
+      document.getElementById('ai-txt').innerText = "店長正在細細品味你的配方...";
+      
+      logs.push({ q: q.d, p: current, ok: isOk, h: q.h, name: q.n });
+
+      google.script.run.withSuccessHandler(msg => {
+        document.getElementById('ai-txt').innerText = msg;
+      }).getAIDialog(q.n, q.d, current, isOk);
+    }
+
+    function goNext() {
+      cIdx++; if(cIdx < 6) load(); else finish();
+    }
+
+    function finish() {
+      show('result-page');
+      document.getElementById('final-cash').innerText = `今日總結：$ ${total}`;
+      document.getElementById('res-list').innerHTML = logs.map((l, i) => `
+        <div class="result-item" style="border-left-color: ${l.ok ? '#22c55e' : '#f43f5e'}">
+          <b style="color:var(--accent)">【${l.name}】</b><br>
+          <b>需求：</b>${l.q}<br>
+          <b>評價：</b>${l.ok ? '完美調配 ✅' : '配方失敗 ❌'}<br>
+          <small>店長的話：${l.h}</small>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
 </html>
