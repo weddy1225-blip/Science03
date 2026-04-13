@@ -75,36 +75,151 @@
   </div>
 
   <script>
-    const baseQuests = [
-      { d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", h: "串聯會平分電壓，讓燈泡亮度變暗，最適合柔和燈光。", a: "series", lab: "串聯 (Series)" },
-      { d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", h: "並聯能讓每個燈泡都獲得完整電壓，亮度最高。", a: "parallel", lab: "並聯 (Parallel)" },
-      { d: "如果一顆燈泡不幸壞了，另一顆也要能繼續亮著。", h: "並聯電路各自獨立，互不干擾，是家中電路的標準接法。", a: "parallel", lab: "並聯 (Parallel)" },
-      { d: "請讓兩顆燈泡一起平分負擔，就像兩個人分擔重物。", h: "串聯電路中，電流只有一條路，能量會被所有負載平分。", a: "series", lab: "串聯 (Series)" }
+    // 完整 100 題題庫
+    const fullQuizData = [
+      { d: "想要微弱的亮光，兩顆都要均勻，不能太刺眼。", a: "series", h: "串聯會平分電壓，讓燈泡亮度變暗，最適合柔和燈光。" },
+      { d: "越亮越好！給我最強的能量！我要這間店最閃亮的酒！", a: "parallel", h: "並聯能讓每個燈泡都獲得完整電壓，亮度最高。" },
+      { d: "如果一顆燈泡不幸壞了，另一顆也要能繼續亮著。", a: "parallel", h: "並聯電路各自獨立，互不干擾，是家中電路的標準接法。" },
+      { d: "請讓兩顆燈泡一起平分負擔，就像兩個人分擔重物。", a: "series", h: "串聯電路中，電流只有一條路，能量會被所有負載平分。" },
+      { d: "我不喜歡太刺眼的光，請讓電力慢慢流過每一顆燈泡。", a: "series", h: "串聯會增加總電阻並平分電壓，使亮度變得柔和。" },
+      { d: "這盞燈是要放在大門口的，必須保證其中一個故障時另一個還會亮。", a: "parallel", h: "並聯提供多條電流路徑，單一元件損壞不影響整體電路。" },
+      { d: "兩顆燈泡要像連體嬰一樣，只要有一個不見，全店都要熄滅。", a: "series", h: "串聯中電流路徑只有一條，任何一處中斷則全線斷路。" },
+      { d: "我需要最強的光輝來照明，預算（電力）不是問題！", a: "parallel", h: "並聯電路中，燈泡兩端電壓等於電源電壓，亮度最強。" },
+      { d: "想要節省電池消耗，讓光芒稍微暗淡一點沒關係。", a: "series", h: "串聯增加總電阻，減少電流輸出，延長電池壽命但亮度降低。" },
+      { d: "我的調飲要展現並駕齊驅的力量，讓兩個燈泡都發揮全力。", a: "parallel", h: "並聯讓每個燈泡都獨立連接到電源，互不分享能量。" },
+      { d: "希望光芒看起來像柔和的月光，不要像太陽一樣刺眼。", a: "series", h: "串聯讓每個燈泡分到的電壓減半，亮度自然變弱。" },
+      { d: "請確保電路是互相獨立的，互不干擾才是專業的接法。", a: "parallel", h: "並聯電路的支路之間互不影響，是現代電路的設計核心。" },
+      { d: "我要挑戰電力系統的極限，讓兩顆燈泡同時達到最高亮度！", a: "parallel", h: "並聯接法下，每一顆燈泡都能獲得與電池相同的電壓。" },
+      { d: "只要電線中間斷掉一截，我就希望全場燈泡都休息。", a: "series", h: "串聯是單一迴路，一個地方斷開，整個迴路就沒有電流。" },
+      { d: "想要營造一種神祕且昏暗的氛圍，亮度請降到最低。", a: "series", h: "串聯會讓燈泡亮度大幅下降，適合需要幽暗氛圍的場景。" },
+      { d: "就算我的手弄壞了其中一盞燈，第二盞燈也要堅守崗位。", a: "parallel", h: "並聯結構保證了供電的備援性，這在安全照明中很重要。" },
+      { d: "這杯酒叫「分擔的愛」，請讓光芒在兩者之間平均分配。", a: "series", h: "串聯電路會依比例分配能量，兩顆相同燈泡會各得一半電壓。" },
+      { d: "我不缺電池，我只要看兩顆燈泡發出最耀眼的光芒！", a: "parallel", h: "並聯接法雖然耗電較快，但能換取最大的發光效率。" },
+      { d: "如果我拔掉其中一顆燈泡，這間店必須立刻全黑！", a: "series", h: "串聯接法就像排隊，中間有人離開了，隊伍就斷了。" },
+      { d: "我要調配一杯「萬家燈火」，請用最穩定的分流方式接電。", a: "parallel", h: "並聯就是將電流分流，讓每個設備都有自己的路。" },
+      { d: "請給我均勻且微弱的燈影，讓客人感覺放鬆。", a: "series", h: "串聯能將高電壓轉化為柔和的低電壓光線。" },
+      { d: "調酒師，請給我最高瓦數的視覺效果，別管續航力了！", a: "parallel", h: "並聯接法能讓燈泡滿功率運作，呈現最強亮度。" },
+      { d: "我追求的是絕對的安全性，萬一故障不能影響其他照明。", a: "parallel", h: "並聯接法在現代住宅配電中被廣泛應用，因為其穩定性高。" },
+      { d: "這杯酒要用來練習耐心，請讓電力走最長的路徑（單迴路）。", a: "series", h: "串聯增加路徑長度與電阻，適合減緩能量輸出。" },
+      { d: "我不希望光線太強，請讓兩顆燈泡平攤電池的電力。", a: "series", h: "串聯會共享能源，讓每一點電力都得到節省。" },
+      { d: "給我那種「一損俱損、一榮俱榮」的連結感！", a: "series", h: "串聯正是這種特性：電流必須流經所有元件才能回到起點。" },
+      { d: "想要看兩顆燈泡同時爭奇鬥艷，各自發出最強的光！", a: "parallel", h: "並聯讓燈泡互不干擾，每一顆都能展現最強的一面。" },
+      { d: "請把燈泡接成「備援模式」，也就是壞掉一個還有一個。", a: "parallel", h: "並聯的並行路徑是系統穩定運作的最佳選擇。" },
+      { d: "這杯叫「省電達人」，請用能讓電池撐最久的接法。", a: "series", h: "串聯增加電阻，電流變小，電池能使用更長的時間。" },
+      { d: "這杯調飲的光要很有侵略性，越亮越好！", a: "parallel", h: "並聯能提供最強的推動力，讓燈泡達到全亮。" },
+      { d: "想要那種朦朧美，不要直接的光線。", a: "series", h: "串聯降低單顆燈泡的輸出能量，產生朦朧的效果。" },
+      { d: "調飲師，請給我最專業的室內配電邏輯。", a: "parallel", h: "並聯能確保每個電器都能拿到相同的電壓需求。" },
+      { d: "如果我想控制一個開關就切斷所有光芒，該怎麼接？", a: "series", h: "串聯只要一個開關就能掌控整個迴路的生死。" },
+      { d: "兩顆燈泡必須互不依賴，各自有自己的電力通道。", a: "parallel", h: "並聯提供獨立通道，讓電流能有多種選擇路徑。" },
+      { d: "想要呈現一種節能環保的微光感。", a: "series", h: "串聯有效限制電流大小，是物理上的節能手段。" },
+      { d: "請把這間店接成「不滅傳說」，一顆故障另一顆絕對不能熄滅。", a: "parallel", h: "並聯的獨立性是照明工程中最關鍵的特性。" },
+      { d: "這杯酒叫「牽絆」，只要有人離開，另一半的心也會熄滅。", a: "series", h: "串聯中，任何一處斷路都會讓整個電流停止流動。" },
+      { d: "想要感受電池完整的威力，直接灌入兩顆燈泡中！", a: "parallel", h: "並聯讓每顆燈泡都直接對準電池的電位差。" },
+      { d: "給我一種平衡、低調且節制的發光方式。", a: "series", h: "串聯平衡了電壓，讓整體發光強度趨於柔和。" },
+      { d: "這杯「多工處理」需要讓燈泡各司其職，互不干涉。", a: "parallel", h: "並聯讓不同元件在同一電源下各自運作。" },
+      { d: "希望燈泡能平均分配這份微弱的電流。", a: "series", h: "串聯在電路中扮演了分壓的角色。" },
+      { d: "我想看到這家店最極限的能量爆發！", a: "parallel", h: "並聯能讓燈泡獲得額定電壓下的最大亮度。" },
+      { d: "如果一顆燈泡突然被移除，我希望維持現有的亮度。", a: "parallel", h: "並聯下移除一顆燈泡，另一顆的電壓與亮度不會改變。" },
+      { d: "請讓電流排隊通過每一顆燈泡，不准插隊。", a: "series", h: "串聯就是電流按順序依次流經所有負載。" },
+      { d: "我需要最穩定的光，不管其中一個燈泡有沒有鎖緊。", a: "parallel", h: "並聯保證了即使一個接點鬆脫，其他路徑依然暢通。" },
+      { d: "請讓這份光芒看起來像夕陽餘暉般溫暖而暗淡。", a: "series", h: "串聯分攤電壓後的暗光非常有夕陽感。" },
+      { d: "調飲師，請給我最強的光！我需要在黑暗中看清楚。", a: "parallel", h: "並聯能有效提供高強度照明需求。" },
+      { d: "這杯酒要展現「互不相欠」，大家的電力自己負責。", a: "parallel", h: "並聯讓每個燈泡都擁有獨立且完整的電力來源。" },
+      { d: "只要我關掉前端，後面通通不准給我發亮！", a: "series", h: "串聯的特性決定了前端中斷即全線中斷。" },
+      { d: "給我一種優雅的減光處理，不要太花俏。", a: "series", h: "串聯是物理降壓最優雅的方法。" },
+      { d: "我想測試這顆電池的最高供電潛力。", a: "parallel", h: "並聯會從電池中抽取較大電流，展示最大出力。" },
+      { d: "請讓光亮維持在最省力的狀態。", a: "series", h: "串聯增加電阻，讓電池的消耗變得很省力。" },
+      { d: "我想要像大飯店一樣，走廊燈壞了房內燈還要亮著。", a: "parallel", h: "這正是並聯在大型建築中不可或缺的原因。" },
+      { d: "給這杯酒一點「團隊意識」，一個人倒下全隊倒下。", a: "series", h: "串聯完美模擬了團隊連動的邏輯。" },
+      { d: "想要看兩顆燈泡同時閃亮，像雙子星一樣耀眼。", a: "parallel", h: "並聯能維持兩者的高電壓，打造雙倍亮點。" },
+      { d: "請給我均勻的亮度，即使兩顆燈泡稍微暗一點也可以。", a: "series", h: "串聯對電壓進行均分，視覺上非常均衡。" },
+      { d: "我要調配一杯「獨立宣言」，誰都不能影響誰。", a: "parallel", h: "並聯即是物理上的獨立運作電路。" },
+      { d: "如果我想降低電流速度，增加電池壽命呢？", a: "series", h: "串聯增加總電阻，降低電流，顯著增加續航力。" },
+      { d: "我不喜歡連動，請給我自由的接電法。", a: "parallel", h: "並聯解開了元件間的互相依賴。" },
+      { d: "想要那種幽微的燭光感，兩顆都要亮但不要強。", a: "series", h: "串聯均分電壓後，燈泡亮度會如同燭火般微弱。" },
+      { d: "請給我最強、最清晰的光影！", a: "parallel", h: "並聯確保能量能完整傳達到輸出端。" },
+      { d: "如果不小心打碎一個燈管，我可不想全黑。", a: "parallel", h: "並聯提供冗餘路徑，防止單點故障導致全系統崩壞。" },
+      { d: "我要這杯酒的電力「排隊」走，不准走捷徑。", a: "series", h: "串聯正是單一迴路，強制電流循序漸進。" },
+      { d: "請讓這兩顆燈泡像同步的脈搏一樣，分擔所有電力。", a: "series", h: "串聯讓兩者成為一個封閉循環中的生命共同體。" },
+      { d: "想要展現像烈火般的熾熱光芒！", a: "parallel", h: "並聯的高能量輸出能激發燈泡的最強光熱。" },
+      { d: "這杯酒叫「分工」，大家各自拿一樣的電力去努力。", a: "parallel", h: "並聯將能量以相同等級分配給所有支路。" },
+      { d: "只要我切斷任何一個開關，我就要看到全部熄滅。", a: "series", h: "串聯是打造全面控管電路的基礎。" },
+      { d: "給我最節約、最能撐到明天的調飲光線。", a: "series", h: "串聯有效抑制電流耗損，維持長效微光。" },
+      { d: "我想看到燈泡發揮 100% 的實力，不要打折！", a: "parallel", h: "並聯不扣除電壓，直接讓燈泡滿負荷發光。" },
+      { d: "追求極致的穩定與耐用，是這杯酒的靈魂。", a: "parallel", h: "並聯接法的故障容許度遠高於其他配置。" },
+      { d: "這杯酒名為「平等」，讓所有燈泡平分電池的重量。", a: "series", h: "串聯會讓電力在所有燈泡間進行公平的分攤。" },
+      { d: "我想要最強的對比感，燈泡一定要最亮！", a: "parallel", h: "並聯打造的強光感能創造最強烈的視覺對比。" },
+      { d: "如果我的電路中斷了，我希望那是因為全部都斷了。", a: "series", h: "串聯電路的整體性非常強大。" },
+      { d: "請給我那種「各自精彩」的電路邏輯。", a: "parallel", h: "並聯確保每一支路都能綻放自己的光彩。" },
+      { d: "想要昏暗且充滿情調的光影效果。", a: "series", h: "串聯能將原本強烈的電力馴服成溫柔的微光。" },
+      { d: "請展現現代城市的供電智慧，既要穩又要亮。", a: "parallel", h: "並聯是城市照明與電網維持穩定與亮度的基石。" },
+      { d: "我不喜歡電力被瓜分，我要每一顆都分到最多的電力。", a: "parallel", h: "並聯讓並行路徑皆能承載完整的電源電位差。" },
+      { d: "這杯酒叫「一體化」，只要壞一個我就退貨。", a: "series", h: "串聯正是一體化連結的最佳物理體現。" },
+      { d: "請讓我的電池能撐過這漫長的一夜，微弱點也沒關係。", a: "series", h: "串聯大幅度降低電池功耗，達成超長續航。" },
+      { d: "我要調配「太陽神之淚」，給我最強烈的光亮！", a: "parallel", h: "並聯是目前獲得最高照明強度的不二法門。" },
+      { d: "如果我想讓燈泡的壽命變長，該怎麼接比較好？", a: "series", h: "串聯降低了每顆燈泡分到的負擔，有效延長燈泡壽命。" },
+      { d: "我想要最靈活的電力系統，壞掉哪一個都能修。", a: "parallel", h: "並聯在維修時非常方便，因為不需要中斷整個系統。" },
+      { d: "請讓電流保持在同一條軌道上，不要分叉。", a: "series", h: "串聯就是單軌電路，電流沒有分叉的機會。" },
+      { d: "這杯「輝煌時刻」需要最大功率的輸出。", a: "parallel", h: "並聯能釋放電池的所有能量來點亮燈泡。" },
+      { d: "追求一種沉靜、收斂且不刺眼的發光感。", a: "series", h: "串聯的分壓作用能將躁動的電力變為安靜的光線。" },
+      { d: "我想確保兩顆燈泡都能分到電池完整的能量。", a: "parallel", h: "並聯電路正是為了讓每個元件獲取額定能量而設計。" },
+      { d: "請給我一種環環相扣、互相依存的感覺。", a: "series", h: "串聯完美解釋了物理上的依存關係。" },
+      { d: "這盞燈是要照亮舞池的，亮度必須是頂尖等級！", a: "parallel", h: "並聯產生的強光足以震撼任何舞台場景。" },
+      { d: "我想降低整個電路的發熱量與能耗。", a: "series", h: "串聯降低了總電流，能有效減少電路中的發熱問題。" },
+      { d: "我不希望光線被打折扣，請給我原汁原味的電力！", a: "parallel", h: "並聯完整傳導了電源壓力，不打任何折扣。" },
+      { d: "如果有一個燈座接觸不良，我不希望另一個受影響。", a: "parallel", h: "並聯提供了冗餘性，保護了另一顆燈泡的正常發光。" },
+      { d: "請讓電路展現最原始、最簡單的單循環邏輯。", a: "series", h: "串聯是物理學中最基礎、最直接的循環結構。" },
+      { d: "想要那種極簡主義的微弱美感。", a: "series", h: "串聯創造出的簡約光感非常符合極簡主義精神。" },
+      { d: "給我最強烈的光，不要有任何能量損耗在分配上！", a: "parallel", h: "並聯直接將電池連接到燈泡兩端，分配效率最高。" },
+      { d: "這杯酒叫「連心」，只要一個人熄滅，我也就不亮了。", a: "series", h: "串聯真實還原了情境中的連結邏輯。" },
+      { d: "追求的是最高瓦數的輸出，亮度一定要驚人。", a: "parallel", h: "並聯能提供高瓦數運作所需的強大電壓環境。" },
+      { d: "請調配出最節省、最能維持長時間營業的光。", a: "series", h: "串聯讓電力消耗變得極其細水長鳴。" },
+      { d: "我不怕燈泡壞，但我怕整個屋子都黑掉。", a: "parallel", h: "並聯的並行路徑保證了最後一道光的存續。" },
+      { d: "請讓電力像接力賽一樣，一個接一個地流過去。", a: "series", h: "串聯模擬了物理能量的線性接力傳遞。" },
+      { d: "我要調配一杯「永恆之光」，用並行邏輯確保亮度不減。", a: "parallel", h: "並聯讓每一道光都能以最強狀態維持到最後。" }
     ];
 
-    const customerTitles = ["喜歡香蕉巧克力的黑桃A", "追求極致光芒的魔法師", "講求穩定的老工程師", "優雅的書卷氣少女", "不喜歡黑暗的探險家"];
-    let fullQuiz = [];
-    for(let i=0; i<100; i++) {
-      let b = baseQuests[i % baseQuests.length];
-      fullQuiz.push({ id: i, n: customerTitles[i % 5], d: b.d, h: b.h, a: b.a, lab: b.lab, v: 150 });
-    }
-
+    const customerTitles = ["喜歡香蕉巧克力的黑桃A", "追求極致光芒的魔法師", "講求穩定的老工程師", "優雅的書卷氣少女", "不喜歡黑暗的探險家", "神祕的電路收藏家", "愛乾淨的實驗員", "森林裡的發光精靈"];
+    
     let gameQuizzes = [], cIdx = 0, total = 0, logs = [], current = null, hVisible = false;
 
     function startGame() {
-      gameQuizzes = fullQuiz.sort(() => Math.random() - 0.5).slice(0, 6);
+      // 從 localStorage 獲取已玩過的 ID
+      let usedIds = JSON.parse(localStorage.getItem('microLight_used_ids') || '[]');
+      
+      // 找出還沒玩過的題目
+      let availablePool = fullQuizData
+        .map((q, index) => ({ ...q, id: index }))
+        .filter(q => !usedIds.includes(q.id));
+      
+      // 如果剩下的題目不足 6 題，則清空重來
+      if (availablePool.length < 6) {
+        usedIds = [];
+        availablePool = fullQuizData.map((q, index) => ({ ...q, id: index }));
+      }
+
+      // 隨機抽選 6 題
+      gameQuizzes = availablePool.sort(() => Math.random() - 0.5).slice(0, 6);
+      
+      // 將抽中的 ID 存回紀錄
+      gameQuizzes.forEach(q => usedIds.push(q.id));
+      localStorage.setItem('microLight_used_ids', JSON.stringify(usedIds));
+
+      cIdx = 0; total = 0; logs = [];
       show('game-page');
       load();
     }
+
     function show(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
+
     function load() {
       const q = gameQuizzes[cIdx];
       document.getElementById('ui-idx').innerText = cIdx + 1;
       document.getElementById('ui-cash').innerText = total;
-      document.getElementById('ui-name').innerText = q.n;
+      document.getElementById('ui-name').innerText = customerTitles[Math.floor(Math.random()*customerTitles.length)];
       document.getElementById('ui-demand').innerText = q.d;
       document.getElementById('ui-hint').innerHTML = `<b>店長筆記：</b>${q.h}`;
       current = null; hVisible = false;
@@ -115,6 +230,7 @@
       document.getElementById('ai-feedback').style.display = 'none';
       document.getElementById('controls').style.pointerEvents = 'auto';
     }
+
     function toggleHint() { hVisible = !hVisible; document.getElementById('ui-hint').style.display = hVisible ? 'block' : 'none'; }
     function setChoice(t) { current = t; document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected')); document.getElementById(t==='series'?'s-btn':'p-btn').classList.add('selected'); }
     
@@ -122,7 +238,7 @@
       if(!current) return alert("學徒，你要選一種接法才能出杯啊！");
       const q = gameQuizzes[cIdx];
       const isOk = (current === q.a);
-      if(isOk) total += q.v;
+      if(isOk) total += 150;
       
       document.querySelectorAll('.bulb').forEach(b => { if(isOk) b.classList.add('on'); else b.classList.add('broken'); });
       document.getElementById('mix-btn').style.display = 'none';
@@ -134,7 +250,7 @@
       if (cIdx === 5) { nextBtn.innerText = "查看今日營收"; nextBtn.style.background = "#f59e0b"; }
       else { nextBtn.innerText = "下一位顧客"; nextBtn.style.background = "var(--success)"; }
       
-      logs.push({ q: q.d, p: current === 'series'?'串聯':'並聯', ok: isOk, h: q.h, name: q.n, correct: q.lab });
+      logs.push({ q: q.d, p: current === 'series'?'串聯':'並聯', ok: isOk, h: q.h, name: document.getElementById('ui-name').innerText, correct: q.a === 'series' ? '串聯 (Series)' : '並聯 (Parallel)' });
     }
 
     function generateManagerFeedback(isOk, choice) {
